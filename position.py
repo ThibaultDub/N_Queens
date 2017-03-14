@@ -2,8 +2,6 @@ class Position:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        # self.is_occupied = False
-        # self.is_forbidden = False
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
@@ -13,24 +11,17 @@ class Position:
 
     def get_neighbours_pos(self, n):
         """returns a list containing all the positions of """
-        neighbours = {(self.x - 1, self.y), (self.x - 1, self.y - 1), (self.x - 1, self.y + 1), (self.x, self.y - 1),
-                      (self.x, self.y + 1), (self.x + 1, self.y), (self.x + 1, self.y - 1), (self.x + 1, self.y + 1)}
-        if self.x == 0:
-            neighbours.remove((self.x - 1, self.y))
-            neighbours.remove((self.x - 1, self.y + 1))
-            neighbours.remove((self.x - 1, self.y - 1))
-        elif self.x == n - 1:
-            neighbours.remove((self.x + 1, self.y))
-            neighbours.remove((self.x + 1, self.y + 1))
-            neighbours.remove((self.x + 1, self.y - 1))
-        if self.y == 0:
-            neighbours.remove((self.x, self.y - 1))
-            neighbours.remove((self.x + 1, self.y - 1))
-            neighbours.remove((self.x - 1, self.y - 1))
-
-        elif self.y == n - 1:
-            neighbours.remove((self.x, self.y + 1))
-            neighbours.remove((self.x + 1, self.y + 1))
-            neighbours.remove((self.x - 1, self.y + 1))
+        initial_neighbours = [Position(self.x - 1, self.y),
+                              Position(self.x - 1, self.y - 1),
+                              Position(self.x - 1, self.y + 1),
+                              Position(self.x, self.y - 1),
+                              Position(self.x, self.y + 1),
+                              Position(self.x + 1, self.y),
+                              Position(self.x + 1, self.y - 1),
+                              Position(self.x + 1, self.y + 1)]
+        neighbours = []
+        for neighbour in initial_neighbours:
+            if not (neighbour.x > n - 1 or neighbour.y > n - 1 or neighbour.x < 0 or neighbour.y < 0):
+                neighbours.append(neighbour)
 
         return neighbours
