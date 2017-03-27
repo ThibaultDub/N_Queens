@@ -1,30 +1,32 @@
-import time
 from datetime import timedelta
-
+from algo import Algo
+import boardLine
 import board
+import time
 
-start_time = time.monotonic()
-
-b = board.Board(8)
-b.add_random_queens(6)
-print(b)
-# while b.fitness()>=4:
-#     b.neighbour()
-#     print(b)
-
-
-# i = 0
-# while b.fitness() >= 3:
-#     i += 1
-#     b.reset_board()
-#     b.add_random_queens(6)
-#     b.fitness()
-#
-# print("fitness = " + str(b.fitness()))
-# print(b)
-# print("loops : " + str(i))
-# end_time = time.monotonic()
+# start_time = time.perf_counter()
+# for i in range(100000):
+#     b= boardLine.BoardLine(8)
+# end_time = time.perf_counter()
 # print(timedelta(seconds=end_time - start_time))
+#
+# l1 = boardLine.Line(8, 3)
+# l2 = boardLine.Line(8, 6)
+# l3 = boardLine.Line(8, 2)
+# l4 = boardLine.Line(8, 7)
+# l5 = boardLine.Line(8, 1)
+# l6 = boardLine.Line(8, 4)
+# l7 = boardLine.Line(8, 0)
+# l8 = boardLine.Line(8, 5)
 
 
-
+# start_time = time.time()
+# b = boardLine.BoardLine(500)
+# b.fitness()
+# print("--- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
+b = Algo.recuit(250, 60, 0.99, 1000, 30)
+# b= Algo.tabou(100)
+print(b)
+print("Fitness : " + str(b.fitness()))
+print("--- %s seconds ---" % (time.time() - start_time))

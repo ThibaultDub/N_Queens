@@ -9,6 +9,9 @@ class Position:
     def __repr__(self):
         return "[" + str(self.x) + "," + str(self.y) + "]"
 
+    def __hash__(self):
+        return hash((self.x, self.y))
+
     def get_neighbours_pos(self, n):
         """returns a list containing all the positions of """
         initial_neighbours = [Position(self.x - 1, self.y),

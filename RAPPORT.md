@@ -1,0 +1,1 @@
+alors le tabou est pas top parce que on cherche pas une très bonne solution mais une solution parfaite. Or le tabou nous permet de sortir de nos bonnes solutions pour aller voir ailleurs s'il y en a. Voilà
