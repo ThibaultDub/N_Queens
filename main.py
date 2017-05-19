@@ -26,7 +26,8 @@ import time
 # print("--- %s seconds ---" % (time.time() - start_time))
 start_time = time.time()
 b = Algo.recuit(250, 60, 0.99, 1000, 30)
-# b= Algo.tabou(100)
+# b = Algo.gen(10, 5)
+
 print(b)
 print("Fitness : " + str(b.fitness()))
 print("--- %s seconds ---" % (time.time() - start_time))

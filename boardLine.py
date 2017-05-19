@@ -2,6 +2,9 @@ import random
 
 
 class BoardLine:
+
+
+
     def __init__(self, n, lines=[]):
         self.n = n
         self.lines = lines  # [Line(self.n, random.randint(0, self.n)) for i in range(self.n)]
@@ -11,6 +14,7 @@ class BoardLine:
             for i in range(self.n):
                 queen_index = available.pop(random.randint(0, len(available) - 1))
                 self.lines.append(Line(self.n, queen_index))
+        # self.atr_fitness = self.fitness() # TODO : Changer le recuit pour prendre en compte l'attribut fitness
 
                 # self.queens = [line.queen for line in self.columns]
 
@@ -41,6 +45,8 @@ class BoardLine:
 
                 i += 1
         return fitness
+
+
 
     def neighbours(self):
         neighbourhood = set()

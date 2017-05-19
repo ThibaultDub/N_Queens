@@ -2,16 +2,35 @@ import random
 import sys
 
 import copy
-
+import time
 import math
+from operator import attrgetter
 
 from boardLine import BoardLine
 
 
 class Algo:
 
+
+
     @staticmethod
-    def gen(size, ):
+    def gen(grid_size, pop_size):
+        population = []
+        for i in range(pop_size):
+            population.append(BoardLine(grid_size)) # TODO : fix broken random generation
+            time.sleep(1)
+        for pop in population:
+            print(pop.fitness())
+
+        # best_fitness_met = max(population, key=attrgetter('atr_fitness'))
+        # print (best_fitness_met)
+        #
+        #
+        #
+        # print(best_fitness_met.atr_fitness)
+        # while (best_fitness_met >0):
+        #     sorted_pop = sorted(population, key = attrgetter('atr_fitness'))
+
 
 
 
@@ -47,28 +66,31 @@ class Algo:
         return xmin
 
     @staticmethod
-    def tabou(
-            size):  # TODO: Attention le tableau tabou ne semble pas fonctionner : il n'a jamais aucun element en commun avec C
+    def tabou(size, taboo_size):
+        # TODO: Attention le tableau tabou ne semble pas fonctionner : il n'a jamais aucun element en commun avec C
         xi = BoardLine(size)
         i = 0
-        t = set()
+        t = []
         xmin = copy.copy(xi)
         fmin = xmin.fitness()
         c = xi.neighbours()
         while (not len(c) == 0) and fmin != 0:
+            print("\n")
             c = xi.neighbours()
-            c = c - t
-            if len(c) > 0:
+            print(len(t))
+            c = set(c) - set(t)
+            if len(c) != 0:
                 local_f_min = sys.maxsize
                 for neighbour in c:
                     if neighbour.fitness() < local_f_min:
                         local_f_min = neighbour.fitness()
                         y = copy.copy(neighbour)
-                    local_f_min = min(local_f_min, neighbour.fitness())
+                    # local_f_min = min(local_f_min, neighbour.fitness())
                 delta_f = y.fitness() - xi.fitness()
                 if delta_f >= 0:
-                    t.add(xi)
-                if local_f_min < fmin:
+                    t.append(xi)
+                # if local_f_min < fmin:
+                if y.fitness() < fmin:
                     fmin = y.fitness()
                     xmin = copy.copy(y)
                 xi = y
