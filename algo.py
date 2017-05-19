@@ -36,22 +36,32 @@ class Algo:
 
     @staticmethod
     def recuit(size, t, gap, n1, n2):
+        """
+            Fonction appelant la méthode du recuit simulé pour résoudre le problème des N Dames.
+
+            param size: taille de l'échiquier
+            param t: Température initiale
+            param gap : coefficient multipliant la temperature actuelle pour obtenir la température suivante
+            param n1 : nombre de changements de température
+            param n2: nombre d'itération par température
+            type size: int
+            type t: int
+            type gap: float <= 1
+            type n1: int
+            type n2: int
+        """
         xi = BoardLine(size)
-        fmin = xi.fitness()
+        fmin = xi.fitness
         i = 0
-        # t = 0.8
-        # gap = 2
-        # n1 = 20  # nb de changements de T°
-        # n2 = 20  # nb d'iterations / T°
         for k in range(0, n1):
             percentage = int(k/n1*100)
-            print(str(percentage) + "% [" + "-"*percentage + " "*(100-percentage) +"] fmin = " + str(fmin)+" "*5, end = "\r")
+            print("\r" + str(percentage) + "% [" + "-"*percentage + " "*(100-percentage) +"] fmin = " + str(fmin)+" "*5, end = "")
             for l in range(0, n2):
                 y = xi.random_neighbour()
-                y_fitness = y.fitness()
+                y_fitness = y.fitness
                 if y_fitness == 0:  # on break si on trouve une solution parfaite
                     return y
-                delta_f = y_fitness - xi.fitness()
+                delta_f = y_fitness - xi.fitness
                 if delta_f <= 0:
                     xi = copy.copy(y)
                     xi_fitness = y_fitness

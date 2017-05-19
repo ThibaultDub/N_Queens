@@ -14,9 +14,8 @@ class BoardLine:
             for i in range(self.n):
                 queen_index = available.pop(random.randint(0, len(available) - 1))
                 self.lines.append(Line(self.n, queen_index))
-        # self.atr_fitness = self.fitness() # TODO : Changer le recuit pour prendre en compte l'attribut fitness
+        self.fitness = self.get_fitness() # TODO : Changer le recuit pour prendre en compte l'attribut fitness
 
-                # self.queens = [line.queen for line in self.columns]
 
     def __repr__(self):
         string = " _" * self.n + "\n"
@@ -25,7 +24,7 @@ class BoardLine:
             string += "\n"
         return string
 
-    def fitness(self):  # A RETESTER ET DEBUGGER
+    def get_fitness(self):
         fitness = 0
         for line_number in range(0, self.n):  # =y
             line = self.lines[line_number]
@@ -53,9 +52,7 @@ class BoardLine:
         for i in range(self.n):
             for j in range(i):
                 temp = self.lines.copy()
-                x = temp[i]
-                temp[i] = temp[j]
-                temp[j] = x
+                temp[i], temp[j] = temp[j], temp[i]
                 new_board = BoardLine(self.n, temp)
                 neighbourhood.add(new_board)
         return neighbourhood
@@ -67,9 +64,7 @@ class BoardLine:
         while i==j:
             j=random.randint(0,self.n-1)
         temp = self.lines.copy()
-        x = temp[i]
-        temp[i] = temp[j]
-        temp[j] = x
+        temp[i], temp[j] = temp[j], temp[i]
         return BoardLine(self.n, temp)
 
 
@@ -86,13 +81,3 @@ class Line:
             else:
                 str += "_|"
         return str
-
-    # @property
-    # def queen(self):
-    #     return self.queen
-
-
-
-        # @queen.setter
-        # def queen(self, queen):
-        #     self.queen = queen
