@@ -14,22 +14,34 @@ class Algo:
 
 
     @staticmethod
-    def gen(grid_size, pop_size):
-        population = []
-        for i in range(pop_size):
-            population.append(BoardLine(grid_size)) # TODO : fix broken random generation
-            time.sleep(1)
-        for pop in population:
-            print(pop.fitness())
+    def gen(grid_size, pop_size, best_pop_size):
+        """
+            Fonction appelant la méthode du recuit simulé pour résoudre le problème des N Dames.
 
-        # best_fitness_met = max(population, key=attrgetter('atr_fitness'))
-        # print (best_fitness_met)
-        #
-        #
-        #
-        # print(best_fitness_met.atr_fitness)
-        # while (best_fitness_met >0):
-        #     sorted_pop = sorted(population, key = attrgetter('atr_fitness'))
+            param size: taille de l'échiquier
+            param pop_size: Taille de la population générée à chaque itération
+            param best_pop_size: nombre d'éléments sur lesquels seront basées les générations suivantes
+        """
+        adam = BoardLine(grid_size)
+        population = []
+
+        for i in range(pop_size-1): # On crée une population de base
+            population.append(adam.random_neighbour())
+            population.append(BoardLine(grid_size)) # TODO : fix broken random
+
+
+        # best_fitness_met = min(population, key=attrgetter('fitness'))
+        # print ("best fitness met = " + str(best_fitness_met.fitness))
+
+
+        sorted_pop = sorted(population, key = attrgetter('fitness')) # on range la population par ordre croissant de fitness
+
+        best_fitness_met = sorted_pop[0] #on définit notre meilleure fitness
+
+        best_pop = sorted_pop[:best_pop_size] # on prend les best_pop_size meilleurs elements de notre pop initiale
+
+        while (best_fitness_met >0):
+            print()
 
 
 

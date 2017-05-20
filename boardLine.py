@@ -1,9 +1,8 @@
 import random
+import math
 
 
 class BoardLine:
-
-
 
     def __init__(self, n, lines=[]):
         self.n = n
@@ -14,7 +13,7 @@ class BoardLine:
             for i in range(self.n):
                 queen_index = available.pop(random.randint(0, len(available) - 1))
                 self.lines.append(Line(self.n, queen_index))
-        self.fitness = self.get_fitness() # TODO : Changer le recuit pour prendre en compte l'attribut fitness
+        self.fitness = self.get_fitness()
 
 
     def __repr__(self):
@@ -47,7 +46,7 @@ class BoardLine:
 
 
 
-    def neighbours(self):
+    def neighbours(self): # TODO : une autre fonction de voisinage qui ne permute pas toutes les colonnes entre elles, mais seulement une seule(aléatoire) avec toutes les autres
         neighbourhood = set()
         for i in range(self.n):
             for j in range(i):
@@ -67,6 +66,26 @@ class BoardLine:
         temp[i], temp[j] = temp[j], temp[i]
         return BoardLine(self.n, temp)
 
+    def reproduce(self, other):
+        # lines1 = self.lines[:int(round(self.n/2))]
+        # print(type(lines1))
+        # second_half1 = other.lines[int(round(self.n/2)):]
+        # print(type(second_half1))
+        # lines1.extend(second_half1)
+        # print(type(lines1))
+
+        new_lines1 = self.lines[:int(round(self.n/2))] # 2e moitié de la première grille
+        new_lines1.extend(other.lines[int(round(self.n/2)):]) # avec la première moitié de la seconde grille
+
+        new_lines2 = other.lines[:int(round(self.n/2))] # 2e moitié de la seconde grille
+        new_lines2.extend(self.lines[int(round(self.n/2)):]) # avec la première moitié de la première
+
+        new1 = BoardLine(self.n, new_lines1)
+        new2 = BoardLine(self.n, new_lines2)
+
+        print(new1)
+        print(new2)
+        return([new1, new2])
 
 class Line:
     def __init__(self, n, queen=0):
