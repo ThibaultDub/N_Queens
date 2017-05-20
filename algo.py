@@ -88,35 +88,36 @@ class Algo:
         return xmin
 
     @staticmethod
-    def tabou(size, taboo_size):
+    def tabou(size, taboo_size=0):
         # TODO: Attention le tableau tabou ne semble pas fonctionner : il n'a jamais aucun element en commun avec C
         xi = BoardLine(size)
         i = 0
         t = []
         xmin = copy.copy(xi)
-        fmin = xmin.fitness()
-        c = xi.neighbours()
+        print(type(xmin))
+        fmin = xmin.fitness
+        c = [0]
         while (not len(c) == 0) and fmin != 0:
-            print("\n")
             c = xi.neighbours()
-            print(len(t))
-            c = set(c) - set(t)
+            # c = set(c) - set(t)
+            for board in t:
+                if(board in c):
+                    c.remove(board)
             if len(c) != 0:
                 local_f_min = sys.maxsize
                 for neighbour in c:
-                    if neighbour.fitness() < local_f_min:
-                        local_f_min = neighbour.fitness()
+                    if neighbour.fitness < local_f_min:
+                        local_f_min = neighbour.fitness
                         y = copy.copy(neighbour)
-                    # local_f_min = min(local_f_min, neighbour.fitness())
-                delta_f = y.fitness() - xi.fitness()
+                    # local_f_min = min(local_f_min, neighbour.fitness)
+                delta_f = y.fitness - xi.fitness
                 if delta_f >= 0:
                     t.append(xi)
                 # if local_f_min < fmin:
-                if y.fitness() < fmin:
-                    fmin = y.fitness()
+                if y.fitness < fmin:
+                    fmin = y.fitness
                     xmin = copy.copy(y)
                 xi = y
             i += 1
-        print(i)
 
         return xmin

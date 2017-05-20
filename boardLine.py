@@ -23,6 +23,15 @@ class BoardLine:
             string += "\n"
         return string
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __hash__(self) -> int:
+        res = 0
+        for line in self.lines:
+            res += 31 * line.__hash__()
+        return res
+
     def get_fitness(self):
         fitness = 0
         for line_number in range(0, self.n):  # =y
@@ -100,3 +109,6 @@ class Line:
             else:
                 str += "_|"
         return str
+
+    def __hash__(self):
+        return 13*self.n+17*self.queen
