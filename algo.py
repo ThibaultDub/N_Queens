@@ -1,6 +1,6 @@
 import random
 import sys
-
+import numpy as np
 import copy
 import time
 import math
@@ -10,9 +10,6 @@ from boardLine import BoardLine
 
 
 class Algo:
-
-
-
     @staticmethod
     def gen(grid_size, pop_size, best_pop_size, mutation_chance):
         """
@@ -24,43 +21,31 @@ class Algo:
         """
         population = []
 
-        for i in range(pop_size): # On crée une population de base
+        for i in range(pop_size):  # On crée une population de base
             grid = BoardLine(grid_size, lines=[], gen=True)
-            print(grid.fitness)
             population.append(grid)
-        print(population)
-
-        sorted_pop = sorted(population, key = attrgetter('fitness')) # on range la population par ordre croissant de fitness
-
-        best_grid_met = sorted_pop[0] #on définit notre meilleure fitness
-
-        best_pop = sorted_pop[:best_pop_size] # on prend les best_pop_size meilleurs elements de notre pop initiale
-        iteration= 0
-        while (best_grid_met.fitness >0):
+        sum_of_fitnesses = sum([element.fitness for element in population])
+        ponder = [(element.fitness / sum_of_fitnesses) for element in population]
+        best_pop = random.choices(population, weights=ponder, k=best_pop_size)
+        best_grid_met = min(best_pop, key=attrgetter('fitness'))
+        while (best_grid_met.fitness > 0):
             population = []
-            while len(population)<pop_size: # reproductions
-                father = random.choice(best_pop)
-                # best_pop.remove(father)
-                print(len(best_pop))
-                mother = random.choice(best_pop)
-
-                print(father==mother)
+            while len(population) < pop_size:  # reproductions
+                [father, mother] = random.choices(best_pop, k=2)
                 population.extend(father.reproduce(mother))
 
-            for element in population: #mutations
+            for element in population:  # mutations
                 element.mutate(mutation_chance)
-
-            sorted_pop = sorted(population, key = attrgetter('fitness'))
-            best_grid_met = sorted_pop[0]
-            best_pop = sorted_pop[:best_pop_size] #selection
-            # time.sleep(5)
+            biggest = max(population, key=attrgetter('fitness'))
+            reverse_fitnesses = [biggest.fitness - element.fitness + 1 for element in population]
+            sum_of_reverse_fitnesses = sum(reverse_fitnesses)
+            ponder = [element / sum_of_reverse_fitnesses for element in reverse_fitnesses]
+            best_pop = np.random.choice(a=population, size=best_pop_size, p=ponder)  # Selection
+            best_grid_met = min(best_pop, key=attrgetter('fitness'))
+            print(best_grid_met)
+            print(best_grid_met.fitness)
 
         return best_grid_met
-
-
-
-
-
 
     @staticmethod
     def recuit(size, t, gap, n1, n2):
@@ -82,8 +67,9 @@ class Algo:
         fmin = xi.fitness
         i = 0
         for k in range(0, n1):
-            percentage = int(k/n1*100)
-            print("\r" + str(percentage) + "% [" + "-"*percentage + " "*(100-percentage) +"] fmin = " + str(fmin)+" "*5, end = "")
+            percentage = int(k / n1 * 100)
+            print("\r" + str(percentage) + "% [" + "-" * percentage + " " * (100 - percentage) + "] fmin = " + str(
+                fmin) + " " * 5, end="")
             for l in range(0, n2):
                 y = xi.random_neighbour()
                 y_fitness = y.fitness
@@ -97,27 +83,27 @@ class Algo:
                         fmin = xi_fitness
                         xmin = copy.copy(xi)
                 else:
-                    if random.random() <= math.exp(-delta_f/t):
+                    if random.random() <= math.exp(-delta_f / t):
                         xi = copy.copy(y)
                 i += 1
             t *= gap
         return xmin
 
     @staticmethod
-    def tabou(size, taboo_size=0):
+    def tabou(size, taboo_size=20):
         # TODO: Attention le tableau tabou ne semble pas fonctionner : il n'a jamais aucun element en commun avec C
         xi = BoardLine(size)
         i = 0
-        t = []
+        t = [None]*taboo_size
         xmin = copy.copy(xi)
-        # print(type(xmin))
         fmin = xmin.fitness
         c = [0]
+        id_taboo = 0
         while (not len(c) == 0) and fmin != 0:
             c = xi.neighbours()
             # c = set(c) - set(t)
             for board in t:
-                if(board in c):
+                if (board in c):
                     c.remove(board)
             if len(c) != 0:
                 local_f_min = sys.maxsize
@@ -125,10 +111,11 @@ class Algo:
                     if neighbour.fitness < local_f_min:
                         local_f_min = neighbour.fitness
                         y = copy.copy(neighbour)
-                    # local_f_min = min(local_f_min, neighbour.fitness)
+                        # local_f_min = min(local_f_min, neighbour.fitness)
                 delta_f = y.fitness - xi.fitness
                 if delta_f >= 0:
-                    t.append(xi)
+                    t[id_taboo%taboo_size]=xi
+                    id_taboo += 1
                 # if local_f_min < fmin:
                 if y.fitness < fmin:
                     fmin = y.fitness

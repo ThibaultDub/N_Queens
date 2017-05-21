@@ -11,11 +11,16 @@ class BoardLine:
         self.forbidden = []
 
         if lines == []:
-            available = list(range(self.n))
-            for i in range(self.n):
-                index_available = random.randint(0, len(available) - 1)
-                queen_index = available.pop(index_available)
-                self.lines.append(Line(self.n, queen_index))
+            if gen:
+                for i in range(self.n):
+                    col = random.randint(0, self.n-1)
+                    self.lines.append(Line(self.n, col))
+            else:
+                available = list(range(self.n))
+                for i in range(self.n):
+                    index_available = random.randint(0, len(available) - 1)
+                    queen_index = available.pop(index_available)
+                    self.lines.append(Line(self.n, queen_index))
 
         if not gen:
             self.fitness = self.get_fitness()
@@ -80,8 +85,6 @@ class BoardLine:
                     fitness += 1
                 if self.lines[y].queen == column_number:
                     fitness += 1
-                if x_left < 0 and x_right > self.n:
-                    break;
 
                 i += 1
         return fitness
@@ -109,23 +112,73 @@ class BoardLine:
         temp[i], temp[j] = temp[j], temp[i]
         return BoardLine(self.n, temp)
 
+    # def reproduce(self, other):
+    #
+    #     new_lines1 = self.lines[:int(round(self.n/2))] # 2e moitié de la première grille
+    #     new_lines1.extend(other.lines[int(round(self.n/2)):]) # avec la première moitié de la seconde grille
+    #
+    #     new_lines2 = other.lines[:int(round(self.n/2))] # 2e moitié de la seconde grille
+    #     new_lines2.extend(self.lines[int(round(self.n/2)):]) # avec la première moitié de la première
+    #
+    #     new1 = BoardLine(self.n, new_lines1, True)
+    #     new2 = BoardLine(self.n, new_lines2, True)
+    #     return([new1, new2])
+
+    # def reproduce(self, other):
+    #     grid1_lines1 = self.lines[:self.n:2] # 1 ligne sur deux à partir de 0
+    #     grid1_lines2 = other.lines[1:self.n:2] # 1 ligne sur deux à partir de 1
+    #     grid2_lines1 = self.lines[1:self.n:2] # 1 ligne sur deux à partir de 1
+    #     grid2_lines2 = other.lines[:self.n:2] # 1 ligne sur deux à partir de 0
+    #
+    #
+    #     grid1_lines = [None] * (len(grid1_lines1) + len(grid1_lines2))
+    #     grid1_lines[::2] = grid1_lines1
+    #     grid1_lines[1::2] = grid1_lines2
+    #     grid2_lines = [None] * (len(grid2_lines1) + len(grid2_lines2))
+    #     grid2_lines[::2] = grid2_lines2
+    #     grid2_lines[1::2] = grid2_lines1
+    #
+    #     new1 = BoardLine(self.n, grid1_lines, True)
+    #     new2 = BoardLine(self.n, grid2_lines, True)
+    #     return([new1, new2])
+
+    # def reproduce(self, other):
+    #     new_lines1 = []
+    #     new_lines2 = []
+    #     for i in range(self.n):
+    #         proba = random.random()
+    #         threshold = 1-self.fitness/(other.fitness+self.fitness)
+    #         if(proba<=threshold):
+    #             new_lines1.append(self.lines[i])
+    #             new_lines2.append(other.lines[i])
+    #         else:
+    #             new_lines1.append(other.lines[i])
+    #             new_lines2.append(self.lines[i])
+    #
+    #     new1 = BoardLine(self.n, new_lines1, True)
+    #     new2 = BoardLine(self.n, new_lines2, True)
+    #     return [new1,new2]
+
     def reproduce(self, other):
+        p = random.randint(0,self.n-1)
+        new_lines1 = self.lines[:p] # 2e moitié de la première grille
+        new_lines1.extend(other.lines[p:]) # avec la première moitié de la seconde grille
 
-        new_lines1 = self.lines[:int(round(self.n/2))] # 2e moitié de la première grille
-        new_lines1.extend(other.lines[int(round(self.n/2)):]) # avec la première moitié de la seconde grille
-
-        new_lines2 = other.lines[:int(round(self.n/2))] # 2e moitié de la seconde grille
-        new_lines2.extend(self.lines[int(round(self.n/2)):]) # avec la première moitié de la première
+        new_lines2 = other.lines[:p] # 2e moitié de la seconde grille
+        new_lines2.extend(self.lines[p:]) # avec la première moitié de la première
 
         new1 = BoardLine(self.n, new_lines1, True)
         new2 = BoardLine(self.n, new_lines2, True)
         return([new1, new2])
 
+
     def mutate(self, mutation_chance):
-        if random.random()<mutation_chance:
+        rand = random.random()
+        if rand<mutation_chance:
             index1 =random.randint(0,self.n - 1)
             index2 =random.randint(0,self.n - 1)
             self.lines[index1], self.lines[index2] = self.lines[index2], self.lines[index1]
+            self.fitness = self.get_fitness_gen()
 
 
 
