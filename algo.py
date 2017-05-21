@@ -1,6 +1,5 @@
 import random
 import sys
-import numpy as np
 import copy
 import time
 import math
@@ -40,7 +39,7 @@ class Algo:
             reverse_fitnesses = [biggest.fitness - element.fitness + 1 for element in population]
             sum_of_reverse_fitnesses = sum(reverse_fitnesses)
             ponder = [element / sum_of_reverse_fitnesses for element in reverse_fitnesses]
-            best_pop = np.random.choice(a=population, size=best_pop_size, p=ponder)  # Selection
+            best_pop = random.choices(population, k=best_pop_size, weights=ponder)  # Selection
             best_grid_met = min(best_pop, key=attrgetter('fitness'))
             print(best_grid_met)
             print(best_grid_met.fitness)
@@ -91,7 +90,6 @@ class Algo:
 
     @staticmethod
     def tabou(size, taboo_size=20):
-        # TODO: Attention le tableau tabou ne semble pas fonctionner : il n'a jamais aucun element en commun avec C
         xi = BoardLine(size)
         i = 0
         t = [None]*taboo_size
@@ -101,7 +99,6 @@ class Algo:
         id_taboo = 0
         while (not len(c) == 0) and fmin != 0:
             c = xi.neighbours()
-            # c = set(c) - set(t)
             for board in t:
                 if (board in c):
                     c.remove(board)
@@ -111,12 +108,10 @@ class Algo:
                     if neighbour.fitness < local_f_min:
                         local_f_min = neighbour.fitness
                         y = copy.copy(neighbour)
-                        # local_f_min = min(local_f_min, neighbour.fitness)
                 delta_f = y.fitness - xi.fitness
                 if delta_f >= 0:
                     t[id_taboo%taboo_size]=xi
                     id_taboo += 1
-                # if local_f_min < fmin:
                 if y.fitness < fmin:
                     fmin = y.fitness
                     xmin = copy.copy(y)
