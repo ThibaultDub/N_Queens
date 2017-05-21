@@ -4,16 +4,25 @@ import math
 
 class BoardLine:
 
-    def __init__(self, n, lines=[]):
+    def __init__(self, n, lines=[], gen = False):
+
         self.n = n
-        self.lines = lines  # [Line(self.n, random.randint(0, self.n)) for i in range(self.n)]
+        self.lines = lines
         self.forbidden = []
+
         if lines == []:
             available = list(range(self.n))
             for i in range(self.n):
-                queen_index = available.pop(random.randint(0, len(available) - 1))
+                index_available = random.randint(0, len(available) - 1)
+                queen_index = available.pop(index_available)
                 self.lines.append(Line(self.n, queen_index))
-        self.fitness = self.get_fitness()
+
+        if not gen:
+            self.fitness = self.get_fitness()
+
+        if gen:
+            self.fitness = self.get_fitness_gen()
+
 
 
     def __repr__(self):
@@ -31,6 +40,7 @@ class BoardLine:
         for line in self.lines:
             res += 31 * line.__hash__()
         return res
+
 
     def get_fitness(self):
         fitness = 0
@@ -52,6 +62,30 @@ class BoardLine:
 
                 i += 1
         return fitness
+
+    def get_fitness_gen(self):
+        fitness = 0
+        for line_number in range(0, self.n):  # =y
+            line = self.lines[line_number]
+            column_number = line.queen  # =x
+            queen = (column_number, line_number)
+            i = 1
+            for searching_line_number in range(line_number + 1, self.n):
+                x_left = queen[0] - i
+                x_right = queen[0] + i
+                y = queen[1] + i
+                if self.lines[y].queen == x_left:
+                    fitness += 1
+                if self.lines[y].queen == x_right:
+                    fitness += 1
+                if self.lines[y].queen == column_number:
+                    fitness += 1
+                if x_left < 0 and x_right > self.n:
+                    break;
+
+                i += 1
+        return fitness
+
 
 
 
@@ -76,12 +110,6 @@ class BoardLine:
         return BoardLine(self.n, temp)
 
     def reproduce(self, other):
-        # lines1 = self.lines[:int(round(self.n/2))]
-        # print(type(lines1))
-        # second_half1 = other.lines[int(round(self.n/2)):]
-        # print(type(second_half1))
-        # lines1.extend(second_half1)
-        # print(type(lines1))
 
         new_lines1 = self.lines[:int(round(self.n/2))] # 2e moitié de la première grille
         new_lines1.extend(other.lines[int(round(self.n/2)):]) # avec la première moitié de la seconde grille
@@ -89,12 +117,19 @@ class BoardLine:
         new_lines2 = other.lines[:int(round(self.n/2))] # 2e moitié de la seconde grille
         new_lines2.extend(self.lines[int(round(self.n/2)):]) # avec la première moitié de la première
 
-        new1 = BoardLine(self.n, new_lines1)
-        new2 = BoardLine(self.n, new_lines2)
-
-        print(new1)
-        print(new2)
+        new1 = BoardLine(self.n, new_lines1, True)
+        new2 = BoardLine(self.n, new_lines2, True)
         return([new1, new2])
+
+    def mutate(self, mutation_chance):
+        if random.random()<mutation_chance:
+            index1 =random.randint(0,self.n - 1)
+            index2 =random.randint(0,self.n - 1)
+            self.lines[index1], self.lines[index2] = self.lines[index2], self.lines[index1]
+
+
+
+
 
 class Line:
     def __init__(self, n, queen=0):

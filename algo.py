@@ -14,7 +14,7 @@ class Algo:
 
 
     @staticmethod
-    def gen(grid_size, pop_size, best_pop_size):
+    def gen(grid_size, pop_size, best_pop_size, mutation_chance):
         """
             Fonction appelant la méthode du recuit simulé pour résoudre le problème des N Dames.
 
@@ -22,26 +22,42 @@ class Algo:
             param pop_size: Taille de la population générée à chaque itération
             param best_pop_size: nombre d'éléments sur lesquels seront basées les générations suivantes
         """
-        adam = BoardLine(grid_size)
         population = []
 
-        for i in range(pop_size-1): # On crée une population de base
-            population.append(adam.random_neighbour())
-            population.append(BoardLine(grid_size)) # TODO : fix broken random
-
-
-        # best_fitness_met = min(population, key=attrgetter('fitness'))
-        # print ("best fitness met = " + str(best_fitness_met.fitness))
-
+        for i in range(pop_size): # On crée une population de base
+            grid = BoardLine(grid_size, lines=[], gen=True)
+            print(grid.fitness)
+            population.append(grid)
+        print(population)
 
         sorted_pop = sorted(population, key = attrgetter('fitness')) # on range la population par ordre croissant de fitness
 
-        best_fitness_met = sorted_pop[0] #on définit notre meilleure fitness
+        best_grid_met = sorted_pop[0] #on définit notre meilleure fitness
 
         best_pop = sorted_pop[:best_pop_size] # on prend les best_pop_size meilleurs elements de notre pop initiale
+        iteration= 0
+        while (best_grid_met.fitness >0):
+            population = []
+            while len(population)<pop_size: # reproductions
+                father = random.choice(best_pop)
+                # best_pop.remove(father)
+                print(len(best_pop))
+                mother = random.choice(best_pop)
 
-        while (best_fitness_met >0):
-            print()
+                print(father==mother)
+                population.extend(father.reproduce(mother))
+
+            for element in population: #mutations
+                element.mutate(mutation_chance)
+
+            sorted_pop = sorted(population, key = attrgetter('fitness'))
+            best_grid_met = sorted_pop[0]
+            best_pop = sorted_pop[:best_pop_size] #selection
+            # time.sleep(5)
+
+        return best_grid_met
+
+
 
 
 
@@ -94,7 +110,7 @@ class Algo:
         i = 0
         t = []
         xmin = copy.copy(xi)
-        print(type(xmin))
+        # print(type(xmin))
         fmin = xmin.fitness
         c = [0]
         while (not len(c) == 0) and fmin != 0:
