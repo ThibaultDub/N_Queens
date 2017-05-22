@@ -5,7 +5,7 @@ import time
 import math
 from operator import attrgetter
 
-from boardLine import BoardLine
+from boardLine import BoardLine, Line
 
 
 class Algo:
@@ -47,7 +47,7 @@ class Algo:
         return best_grid_met
 
     @staticmethod
-    def recuit(size, t, gap, n1, n2):
+    def recuit(size, t, gap, n1, n2, verbose= True):
         """
             Fonction appelant la méthode du recuit simulé pour résoudre le problème des N Dames.
 
@@ -67,19 +67,17 @@ class Algo:
         i = 0
         for k in range(0, n1):
             percentage = int(k / n1 * 100)
-            print("\r" + str(percentage) + "% [" + "-" * percentage + " " * (100 - percentage) + "] fmin = " + str(
-                fmin) + " " * 5, end="")
+            if verbose:
+                print(str(percentage) + "% [" + "-" * percentage + " " * (100 - percentage) + "] fmin = " + str(fmin) + " " * 5, end="\r")
             for l in range(0, n2):
                 y = xi.random_neighbour()
-                y_fitness = y.fitness
-                if y_fitness == 0:  # on break si on trouve une solution parfaite
+                if y.fitness == 0:  # on break si on trouve une solution parfaite
                     return y
-                delta_f = y_fitness - xi.fitness
+                delta_f = y.fitness - xi.fitness
                 if delta_f <= 0:
                     xi = copy.copy(y)
-                    xi_fitness = y_fitness
-                    if xi_fitness < fmin:
-                        fmin = xi_fitness
+                    if y.fitness < fmin:
+                        fmin = y.fitness
                         xmin = copy.copy(xi)
                 else:
                     if random.random() <= math.exp(-delta_f / t):
@@ -119,3 +117,10 @@ class Algo:
             i += 1
 
         return xmin
+
+    @staticmethod
+    def random(size):
+        board = BoardLine(size, lines=[])
+        while board.fitness:
+            board = BoardLine(size, lines=[])
+        return board
